@@ -40,7 +40,9 @@ INSTALLED_APPS = [
     'post',
     'rest_framework',
     'corsheaders',
-    'accont',
+    'account',
+    'allauth',
+    'rest_auth.registration',
 ]
 
 REST_FRAMEWORK = {
