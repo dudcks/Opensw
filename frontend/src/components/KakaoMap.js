@@ -5,6 +5,7 @@ import {
   useMap,
   MapTypeControl,
   CustomOverlayMap,
+  Polygon,
 } from "react-kakao-maps-sdk";
 import { useState, useEffect } from "react";
 import styles from "./KakaoMap.module.css";
@@ -18,6 +19,7 @@ const KakaoMap = () => {
   const [post, setPost] = useState([]);
   const [selectedMarker, setSelectedMarker] = useState(null);
   const email1 = localStorage.getItem("email");
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     //post model 불러오기
@@ -50,6 +52,21 @@ const KakaoMap = () => {
         console.log(error);
       });
   }, []);
+
+  const handleDelete = (id) => {
+    const token = localStorage.getItem("token");
+    axios
+      .delete(`http://127.0.0.1:8000/api/${id}/`, {
+        headers: { Authorization: `Token ${token}` },
+      })
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    window.location.reload();
+  };
 
   //Map Marker 표시하기
   const EventMarkerContainer = ({ position, content }) => {
@@ -133,6 +150,14 @@ const KakaoMap = () => {
           <CustomOverlayMap position={position}>
             <div className={styles.infowindow}>
               <div className={styles.head}>
+                {email1 === content.email && (
+                  <button
+                    className={styles.deleteBtn}
+                    onClick={() => handleDelete(content.id)}
+                  >
+                    삭제
+                  </button>
+                )}
                 <p className={styles.date}>{content.date}</p>
                 <h3 className={styles.title}>{content.title}</h3>
                 <hr className={styles.line} />
@@ -142,14 +167,18 @@ const KakaoMap = () => {
                 {/* <p className={styles.gender}>{content.gender}</p> */}
                 <p className={styles.person}>인원 : {content.person}명</p>
                 <p className={styles.major}>전공 : {content.major}</p>
-
                 {content.match === 1 ? (
                   <button className={styles.match}>
                     <Link to={`/chat/${content.roomid}`}>채팅</Link>
                   </button>
                 ) : (
                   email1 !== content.email && (
-                    <button className={styles.match} onClick={() => putRequest(content)}>매칭</button>
+                    <button
+                      className={styles.match}
+                      onClick={() => putRequest(content)}
+                    >
+                      매칭
+                    </button>
                   )
                 )}
               </div>
